@@ -151,7 +151,6 @@ app.get("/user-info", async (req, res) => {
     });
     try {
       const data = await spotifyApi.getMe();
-      console.log(data);
       res.json({ user: data.body.display_name });
     } catch (err) {
       console.error(err);

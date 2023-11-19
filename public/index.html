@@ -13,16 +13,47 @@
       });
     </script>
 
-    <div id="user-info">Not logged in</div>
-    <button id="login-button" onclick="login()">Login with Spotify</button>
-    <button id="logout-button" onclick="logout()">Logout</button>
+    <div class="container">
+      <div id="user-info" class="info">Not logged in</div>
 
-    <div id="current-track">No track playing</div>
-    <button onclick="playMusic()">Play</button>
-    <button onclick="pauseMusic()">Pause</button>
-    <button onclick="nextTrack()">Next</button>
-    <button onclick="previousTrack()">Previous</button>
-    <label> <input type="checkbox" id="master-checkbox" /> Master </label>
+      <div class="buttons">
+        <button id="login-button" class="btn" onclick="login()">
+          Login with Spotify
+        </button>
+        <button id="logout-button" class="btn" onclick="logout()">
+          Logout
+        </button>
+      </div>
+
+      <div id="current-track" class="track-info">No track playing</div>
+
+      <div class="player-controls">
+        <button class="control-btn" onclick="playMusic()">Play</button>
+        <button class="control-btn" onclick="pauseMusic()">Pause</button>
+        <button class="control-btn" onclick="nextTrack()">Next</button>
+        <button class="control-btn" onclick="previousTrack()">Previous</button>
+      </div>
+
+      <div class="role-selection">
+        <div id="host-toggle" class="toggle-switch" onclick="setRole('host')">
+          <span class="toggle-label">Host</span>
+        </div>
+        <div
+          id="client-toggle"
+          class="toggle-switch"
+          onclick="setRole('client')"
+        >
+          <span class="toggle-label">Client</span>
+        </div>
+        <div
+          id="neither-toggle"
+          class="toggle-switch"
+          onclick="setRole('neither')"
+        >
+          <span class="toggle-label">Neither</span>
+        </div>
+      </div>
+    </div>
 
     <script src="script.js"></script>
   </body>

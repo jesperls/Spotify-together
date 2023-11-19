@@ -1,3 +1,5 @@
+let role = "neither";
+
 function login() {
   window.location.href = "/login";
 }
@@ -37,6 +39,8 @@ function fetchUserInfo() {
         document.getElementById(
           "user-info"
         ).innerText = `Logged in as ${data.user}`;
+        setInterval(updateCurrentTrack, 5000);
+        updateCurrentTrack();
       } else {
         document.getElementById("user-info").innerText = "Not logged in";
       }
@@ -56,9 +60,10 @@ function updateCurrentTrack() {
         const progress = formatProgress(data.progressMs);
         document.getElementById(
           "current-track"
-        ).innerText = `Now playing: ${data.track} by ${data.artist} - ${progress}`;
+        ).innerText = `Now playing: ${data.track} by ${data.artist}`;
+        // ).innerText = `Now playing: ${data.track} by ${data.artist} - ${progress}`;
 
-        if (document.getElementById("master-checkbox").checked) {
+        if (role === "host") {
           broadcastCurrentTrack(data);
         }
       } else {
@@ -86,10 +91,9 @@ function formatProgress(milliseconds) {
 }
 
 function syncWithMaster(trackData) {
-  if (document.getElementById("master-checkbox").checked) {
-    return; // Do not sync if the user is the master
+  if (role !== "client") {
+    return; // Do not sync if the user is not a client
   }
-
   // Fetch current user's track
   fetch("/current-track")
     .then((response) => response.json())
@@ -122,6 +126,14 @@ function syncWithMaster(trackData) {
     .catch((error) => console.error("Error fetching user track:", error));
 }
 
-setInterval(updateCurrentTrack, 5000);
+function setRole(newRole) {
+  // Update UI based on role selection and send role to server
+  document
+    .querySelectorAll(".toggle-switch")
+    .forEach((el) => el.classList.remove("active"));
+  document.querySelector("#" + newRole + "-toggle").classList.add("active");
+  role = newRole;
+}
+
+setRole("neither");
 fetchUserInfo();
-updateCurrentTrack();
