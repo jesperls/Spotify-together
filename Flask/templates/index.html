@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Spotify Flask App</title>
+</head>
+<body>
+    <h1>Welcome to the Spotify Flask App</h1>
+
+    <!-- Spotify Login -->
+    <div>
+        <a href="/login">Login with Spotify</a>
+    </div>
+
+    <!-- Playback Controls -->
+    <div>
+        <h2>Playback Controls</h2>
+        <button onclick="location.href='/play'">Play</button>
+        <button onclick="location.href='/pause'">Pause</button>
+        <button onclick="location.href='/next'">Next</button>
+        <button onclick="location.href='/previous'">Previous</button>
+    </div>
+
+    <!-- Logout -->
+    <div>
+        <a href="/logout">Logout</a>
+    </div>
+</body>
+</html>
