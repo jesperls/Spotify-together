@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Spotify Music Player</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+  </head>
+  <body>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+      socket.on("master-track-updated", (trackData) => {
+        syncWithMaster(trackData);
+      });
+    </script>
+
+    <div id="user-info">Not logged in</div>
+    <button id="login-button" onclick="login()">Login with Spotify</button>
+    <button id="logout-button" onclick="logout()">Logout</button>
+
+    <div id="current-track">No track playing</div>
+    <button onclick="playMusic()">Play</button>
+    <button onclick="pauseMusic()">Pause</button>
+    <button onclick="nextTrack()">Next</button>
+    <button onclick="previousTrack()">Previous</button>
+    <label> <input type="checkbox" id="master-checkbox" /> Master </label>
+
+    <script src="script.js"></script>
+  </body>
+</html>
