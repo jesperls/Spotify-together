@@ -48,12 +48,12 @@ npm start
 ```
 The server will start running on http://localhost:3000.
 
-### Step 4: Building and running the server as a babel webpack (optional)
-1. Build the babel webpack:
+### Step 4: Building and running the server as a webpack (optional)
+1. Build the webpack:
 ```
 npm run build
 ```
-2. Run the babel webpack:
+2. Run the webpack:
 ```
 npm run babel
 ```
