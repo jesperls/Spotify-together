@@ -1,6 +1,8 @@
 ﻿# Spotify-together
 Welcome to Spotify-together, a Node.js server application that lets users connect and enjoy Spotify music together in real time. Perfect for virtual listening parties or sharing a music experience with friends, Spotify-together brings people together through music.
 
+Demo site is hosted at [https://darkrage.pro](https://darkrage.pro/)
+
 ## Features
 * Real-time music streaming with friends.
 * Host and client roles for shared listening experiences.
@@ -18,6 +20,7 @@ Before starting, ensure you have the following:
 2. Create a new application.
 3. Note down the SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET.
 4. Set the REDIRECT_URI in your Spotify app settings to http://localhost:3000/callback (or your preferred callback address).
+5. Add any users wanting to use the application in the User Management tab.
 
 ### Step 2: Configuring the Server
 1. Clone the repository:
@@ -45,9 +48,20 @@ npm start
 ```
 The server will start running on http://localhost:3000.
 
+### Step 4: Building and running the server as a babel webpack (optional)
+1. Build the babel webpack:
+```
+npm run build
+```
+2. Run the babel webpack:
+```
+npm run babel
+```
+
 ## Usage
 After starting the server and navigating to http://localhost:3000, log in with your Spotify account. You will then have the option to choose between being a host, a client, or neither:
 
 * **Host**: As a host, your music is streamed to all connected clients. Whenever you switch songs, the music is synced up across all listeners.
 * **Client**: As a client, you can join a host's session and listen to the music they are playing in real time.
 * **Neither**: This option allows you to explore the application without participating in a music session.
+
