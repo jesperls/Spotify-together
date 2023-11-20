@@ -62,58 +62,57 @@ input[type="radio"] {
 /* ... Existing styles ... */
 
 .toggle-switch {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center; /* Center the label */
-    background-color: #3498db; /* Default color */
-    border-radius: 20px;
-    padding: 8px 20px; /* Adjusted for visual balance */
-    margin: 10px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .toggle-switch:hover {
-    background-color: #2980b9; /* Darker shade on hover */
-  }
-  
-  .toggle-switch.active {
-    background-color: #2ecc71; /* Active state color */
-  }
-  
-  .toggle-label {
-    color: white;
-    font-size: 0.8em;
-  }
-  
-  .room-id-container {
-    margin: 20px auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .room-id-input {
-    font-family: 'Press Start 2P', cursive;
-    padding: 8px;
-    font-size: 0.8em;
-    margin-right: 10px;
-    border: 2px solid #3498db; /* Matching the retro blue */
-    background-color: #2c3e50;
-    color: white;
-    border-radius: 4px;
-    outline: none;
-  }
-  
-  .room-id-input::placeholder {
-    color: #7f8c8d;
-  }
-  
-  .join-btn {
-    background-color: #e67e22; /* Retro orange for the join button */
-  }
-  
-  .join-btn:hover {
-    background-color: #d35400; /* Darker shade on hover */
-  }
-  
+  display: inline-flex;
+  align-items: center;
+  justify-content: center; /* Center the label */
+  background-color: #3498db; /* Default color */
+  border-radius: 20px;
+  padding: 8px 20px; /* Adjusted for visual balance */
+  margin: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.toggle-switch:hover {
+  background-color: #2980b9; /* Darker shade on hover */
+}
+
+.toggle-switch.active {
+  background-color: #2ecc71; /* Active state color */
+}
+
+.toggle-label {
+  color: white;
+  font-size: 0.8em;
+}
+
+.room-id-container {
+  margin: 20px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.room-id-input {
+  font-family: "Press Start 2P", cursive;
+  padding: 8px;
+  font-size: 0.8em;
+  margin-right: 10px;
+  border: 2px solid #3498db; /* Matching the retro blue */
+  background-color: #2c3e50;
+  color: white;
+  border-radius: 4px;
+  outline: none;
+}
+
+.room-id-input::placeholder {
+  color: #7f8c8d;
+}
+
+.join-btn {
+  background-color: #e67e22; /* Retro orange for the join button */
+}
+
+.join-btn:hover {
+  background-color: #d35400; /* Darker shade on hover */
+}

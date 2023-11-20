@@ -94,10 +94,13 @@ function syncWithMaster(trackData) {
   fetch("/current-track")
     .then((response) => response.json())
     .then((userData) => {
+      const isTrackDataAvailable = userData.track && trackData.track;
+      const isTrackChanged = userData.track !== trackData.track;
+      const isProgressDifferenceSignificant =
+        Math.abs(userData.progressMs - trackData.progressMs) > 1000;
       if (
-        userData.track &&
-        trackData.track &&
-        userData.track !== trackData.track
+        isTrackDataAvailable &&
+        (isTrackChanged || isProgressDifferenceSignificant)
       ) {
         fetch("/sync-track", {
           method: "POST",

@@ -17,10 +17,10 @@ const session = require("express-session");
 io.on("connection", (socket) => {
   console.log("A client connected");
 
-  socket.on('join-room', (data) => {
+  socket.on("join-room", (data) => {
     console.log(`Client ${socket.id} joined room ${data.roomName}`);
     socket.leaveAll();
-    socket.join(data.roomName); 
+    socket.join(data.roomName);
   });
 
   // Handle disconnection
@@ -181,7 +181,7 @@ app.get("/current-track", async (req, res) => {
     });
 
     try {
-      const trackData = await spotifyApi.getMyCurrentPlayingTrack();
+      const trackData = await spotifyApi.getMyCurrentPlaybackState();
       if (trackData.body && trackData.body.item) {
         const trackName = trackData.body.item.name;
         const artistName = trackData.body.item.artists
@@ -189,12 +189,16 @@ app.get("/current-track", async (req, res) => {
           .join(", ");
         const progressMs = trackData.body.progress_ms;
         const trackUri = trackData.body.item.uri; // Get the track URI
+        const playbackState = trackData.body.is_playing;
+        const timeSent = Date.now();
 
         res.json({
           track: trackName,
           artist: artistName,
           progressMs: progressMs,
           trackUri: trackUri, // Include the track URI in the response
+          playbackState: playbackState,
+          timeSent: timeSent,
         });
       } else {
         res.json({ track: null });
@@ -224,10 +228,16 @@ app.post("/sync-track", async (req, res) => {
     });
     data = req.body;
     try {
-      await spotifyApi.play({
-        uris: [data.trackUri],
-        position_ms: data.progressMs,
-      });
+      if (data.playbackState) {
+        await spotifyApi.play({
+          uris: [data.trackUri],
+          position_ms: data.progressMs + (Date.now() - data.timeSent),
+        });
+        console.log((Date.now() - data.timeSent));
+      }
+      else {
+        await spotifyApi.pause();
+      }
       res.send("Synced with master track");
     } catch (err) {
       console.error(err);
@@ -242,7 +252,7 @@ app.post("/sync-track", async (req, res) => {
 
 app.post("/join-room", async (req, res) => {
   req.session.roomName = req.body.roomName;
-  req.session.save(err => {
+  req.session.save((err) => {
     if (err) {
       console.log(err);
       res.status(500).send("Could not save session");
