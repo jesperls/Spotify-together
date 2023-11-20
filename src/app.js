@@ -170,16 +170,6 @@ app.get("/logout", (req, res) => {
   });
 });
 
-async function refreshAccessToken(refreshToken) {
-  spotifyApi.setRefreshToken(refreshToken);
-  try {
-    const data = await spotifyApi.refreshAccessToken();
-    return data.body["access_token"];
-  } catch (err) {
-    console.error("Could not refresh access token", err);
-  }
-}
-
 app.get("/current-track", async (req, res) => {
   if (req.session.spotifyTokens) {
     const spotifyApi = new SpotifyWebApi({
