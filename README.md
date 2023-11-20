@@ -32,7 +32,7 @@ cd Spotify-together
 ```
 SPOTIFY_CLIENT_ID=your_spotify_client_id
 SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
-REDIRECT_URI=http://localhost:3000
+REDIRECT_URI=http://localhost:3000/callback
 ```
 ### Step 3: Installing Dependencies and Running the Server
 1. Install the required Node modules:
