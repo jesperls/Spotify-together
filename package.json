@@ -4,8 +4,9 @@
   "description": "spotify together",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js"
+    "start": "nodemon src/app.js",
+    "build": "babel src --out-dir dist",
+    "run": "node dist/app.js"
   },
   "author": "",
   "license": "ISC",
@@ -17,6 +18,9 @@
     "spotify-web-api-node": "^5.0.2"
   },
   "devDependencies": {
+    "@babel/cli": "^7.23.0",
+    "@babel/core": "^7.23.3",
+    "@babel/preset-env": "^7.23.3",
     "nodemon": "^3.0.1"
   }
 }
