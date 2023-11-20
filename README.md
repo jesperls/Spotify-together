@@ -48,6 +48,16 @@ npm start
 ```
 The server will start running on http://localhost:3000.
 
+### Step 4: Building and running the server as a babel webpack (optional)
+1. Build the babel webpack:
+```
+npm run build
+```
+2. Run the babel webpack:
+```
+npm run babel
+```
+
 ## Usage
 After starting the server and navigating to http://localhost:3000, log in with your Spotify account. You will then have the option to choose between being a host, a client, or neither:
 
