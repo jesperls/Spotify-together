@@ -20,6 +20,7 @@ Before starting, ensure you have the following:
 2. Create a new application.
 3. Note down the SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET.
 4. Set the REDIRECT_URI in your Spotify app settings to http://localhost:3000/callback (or your preferred callback address).
+5. Add any users wanting to use the application in the User Management tab.
 
 ### Step 2: Configuring the Server
 1. Clone the repository:
@@ -53,3 +54,4 @@ After starting the server and navigating to http://localhost:3000, log in with y
 * **Host**: As a host, your music is streamed to all connected clients. Whenever you switch songs, the music is synced up across all listeners.
 * **Client**: As a client, you can join a host's session and listen to the music they are playing in real time.
 * **Neither**: This option allows you to explore the application without participating in a music session.
+
