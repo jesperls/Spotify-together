@@ -3,6 +3,7 @@
   <head>
     <title>Spotify Music Player</title>
     <link rel="stylesheet" type="text/css" href="style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="/icon.png">
   </head>
   <body>
@@ -29,10 +30,18 @@
       <div id="current-track" class="track-info">No track playing</div>
 
       <div class="player-controls">
-        <button class="control-btn" onclick="playMusic()">Play</button>
-        <button class="control-btn" onclick="pauseMusic()">Pause</button>
-        <button class="control-btn" onclick="nextTrack()">Next</button>
-        <button class="control-btn" onclick="previousTrack()">Previous</button>
+        <button class="control-btn" onclick="playMusic()">
+          <i class="fa fa-play"></i> <!-- Play Icon -->
+        </button>
+        <button class="control-btn" onclick="pauseMusic()">
+          <i class="fa fa-pause"></i> <!-- Pause Icon -->
+        </button>
+        <button class="control-btn" onclick="nextTrack()">
+          <i class="fa fa-forward"></i> <!-- Next Icon -->
+        </button>
+        <button class="control-btn" onclick="previousTrack()">
+          <i class="fa fa-backward"></i> <!-- Previous Icon -->
+        </button>
       </div>
 
       <div class="role-selection">
