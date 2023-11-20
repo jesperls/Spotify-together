@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon src/app.js",
     "build": "babel src --out-dir dist",
-    "run": "node dist/app.js"
+    "babel": "node dist/app.js"
   },
   "author": "",
   "license": "ISC",
