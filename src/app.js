@@ -1,6 +1,6 @@
 const express = require("express");
-const http = require('http');
-const socketIo = require('socket.io');
+const http = require("http");
+const socketIo = require("socket.io");
 const SpotifyWebApi = require("spotify-web-api-node");
 require("dotenv").config();
 
@@ -14,16 +14,20 @@ app.use(express.json());
 
 const session = require("express-session");
 
-let currentMasterTrack = null;
+io.on("connection", (socket) => {
+  console.log("A client connected");
 
-io.on('connection', (socket) => {
-    console.log('A client connected');
-  
-    // Handle disconnection
-    socket.on('disconnect', () => {
-      console.log('A client disconnected');
-    });
+  socket.on('join-room', (data) => {
+    console.log(`Client ${socket.id} joined room ${data.roomName}`);
+    socket.leaveAll();
+    socket.join(data.roomName); 
   });
+
+  // Handle disconnection
+  socket.on("disconnect", () => {
+    console.log("A client disconnected");
+  });
+});
 
 app.use(
   session({
@@ -178,7 +182,7 @@ app.get("/current-track", async (req, res) => {
 
     try {
       const trackData = await spotifyApi.getMyCurrentPlayingTrack();
-      if (trackData.body && trackData.body.is_playing) {
+      if (trackData.body && trackData.body.item) {
         const trackName = trackData.body.item.name;
         const artistName = trackData.body.item.artists
           .map((artist) => artist.name)
@@ -205,25 +209,24 @@ app.get("/current-track", async (req, res) => {
 });
 
 app.post("/broadcast-track", (req, res) => {
-    if (req.session.spotifyTokens) {
-      currentMasterTrack = req.body;
-      io.emit('master-track-updated', currentMasterTrack); // Emit to all clients
-      res.status(200).send("Track info broadcasted");
-    } else {
-      res.status(401).send("User not authenticated");
-    }
+  if (req.session.spotifyTokens && req.session.roomName) {
+    io.to(req.session.roomName).emit("master-track-updated", req.body);
+    res.status(200).send("Track info broadcasted");
+  } else {
+    res.status(401).send("User not authenticated");
+  }
 });
 
-app.get("/sync-track", async (req, res) => {
-  if (req.session.spotifyTokens && currentMasterTrack) {
+app.post("/sync-track", async (req, res) => {
+  if (req.session.spotifyTokens && req.session.roomName) {
     const spotifyApi = new SpotifyWebApi({
       accessToken: req.session.spotifyTokens.accessToken,
     });
-
+    data = req.body;
     try {
       await spotifyApi.play({
-        uris: [currentMasterTrack.trackUri],
-        position_ms: currentMasterTrack.progressMs,
+        uris: [data.trackUri],
+        position_ms: data.progressMs,
       });
       res.send("Synced with master track");
     } catch (err) {
@@ -235,6 +238,19 @@ app.get("/sync-track", async (req, res) => {
       .status(401)
       .send("User not authenticated or no master track info available");
   }
+});
+
+app.post("/join-room", async (req, res) => {
+  req.session.roomName = req.body.roomName;
+  req.session.save(err => {
+    if (err) {
+      console.log(err);
+      res.status(500).send("Could not save session");
+    } else {
+      console.log(req.session.roomName);
+      res.send("Joined room " + req.body.roomName);
+    }
+  });
 });
 
 const port = 3000;

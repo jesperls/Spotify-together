@@ -86,3 +86,34 @@ input[type="radio"] {
     font-size: 0.8em;
   }
   
+  .room-id-container {
+    margin: 20px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .room-id-input {
+    font-family: 'Press Start 2P', cursive;
+    padding: 8px;
+    font-size: 0.8em;
+    margin-right: 10px;
+    border: 2px solid #3498db; /* Matching the retro blue */
+    background-color: #2c3e50;
+    color: white;
+    border-radius: 4px;
+    outline: none;
+  }
+  
+  .room-id-input::placeholder {
+    color: #7f8c8d;
+  }
+  
+  .join-btn {
+    background-color: #e67e22; /* Retro orange for the join button */
+  }
+  
+  .join-btn:hover {
+    background-color: #d35400; /* Darker shade on hover */
+  }
+  

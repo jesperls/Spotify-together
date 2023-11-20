@@ -1,4 +1,9 @@
 let role = "neither";
+let roomName = null;
+const socket = io();
+socket.on("master-track-updated", (trackData) => {
+  syncWithMaster(trackData);
+});
 
 function login() {
   window.location.href = "/login";
@@ -57,13 +62,11 @@ function updateCurrentTrack() {
     .then((response) => response.json())
     .then((data) => {
       if (data.track) {
-        const progress = formatProgress(data.progressMs);
         document.getElementById(
           "current-track"
         ).innerText = `Now playing: ${data.track} by ${data.artist}`;
-        // ).innerText = `Now playing: ${data.track} by ${data.artist} - ${progress}`;
 
-        if (role === "host") {
+        if (role === "host" && roomName !== null) {
           broadcastCurrentTrack(data);
         }
       } else {
@@ -83,13 +86,6 @@ function broadcastCurrentTrack(trackData) {
   });
 }
 
-function formatProgress(milliseconds) {
-  const totalSeconds = Math.floor(milliseconds / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
-}
-
 function syncWithMaster(trackData) {
   if (role !== "client") {
     return; // Do not sync if the user is not a client
@@ -98,22 +94,18 @@ function syncWithMaster(trackData) {
   fetch("/current-track")
     .then((response) => response.json())
     .then((userData) => {
-      if (userData.track) {
-        if (trackData.track && trackData.trackUri !== userData.trackUri) {
-          // Do not sync if the tracks are the same
-          fetch("/sync-track")
-            .then((response) => response.text())
-            .then((message) => {
-              console.log(message);
-            })
-            .catch((error) =>
-              console.error("Error syncing with master track:", error)
-            );
-          return;
-        }
-      } else {
-        // Sync if the user is not playing anything
-        fetch("/sync-track")
+      if (
+        userData.track &&
+        trackData.track &&
+        userData.track !== trackData.track
+      ) {
+        fetch("/sync-track", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(trackData),
+        })
           .then((response) => response.text())
           .then((message) => {
             console.log(message);
@@ -133,6 +125,29 @@ function setRole(newRole) {
     .forEach((el) => el.classList.remove("active"));
   document.querySelector("#" + newRole + "-toggle").classList.add("active");
   role = newRole;
+}
+
+function joinRoom() {
+  const roomInput = document.getElementById("room-name").value;
+  roomName = roomInput;
+  if (!roomInput) {
+    alert("Please enter a room name");
+    return;
+  }
+  fetch("/join-room", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ roomName: roomInput }),
+  })
+    .then((response) => response.text())
+    .then((message) => {
+      console.log(message);
+      socket.emit("join-room", { roomName: roomInput });
+      document.getElementById("room-info").innerText = `Room: ${roomInput}`;
+    })
+    .catch((error) => console.error("Error joining room:", error));
 }
 
 setRole("neither");
