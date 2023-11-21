@@ -6,6 +6,9 @@ socket.on("master-track-updated", (trackData) => {
   syncWithMaster(trackData);
 });
 
+/*
+  Receives a track URI from the server and adds it to the queue if you are the host.
+*/
 socket.on("add-to-queue", (trackData) => {
   if (role === "host") {
     fetch("/add-to-queue", {
@@ -52,6 +55,9 @@ function previousTrack() {
   fetch("/previous");
 }
 
+/*
+  Fetches the user info from the server and updates the DOM.
+*/
 function fetchUserInfo() {
   fetch("/user-info")
     .then((response) => response.json())
@@ -73,6 +79,9 @@ function fetchUserInfo() {
     });
 }
 
+/*
+  Updates the current track in the DOM and if the user is the host, broadcasts the current track to all clients.
+*/
 function updateCurrentTrack() {
   fetch("/current-track")
     .then((response) => response.json())
@@ -92,6 +101,9 @@ function updateCurrentTrack() {
     .catch((error) => console.error("Error fetching current track:", error));
 }
 
+/*
+  Broadcasts the current track to all clients.
+*/
 function broadcastCurrentTrack(trackData) {
   fetch("/broadcast-track", {
     method: "POST",
@@ -102,6 +114,9 @@ function broadcastCurrentTrack(trackData) {
   });
 }
 
+/*
+  Syncs the client's track with the hosts track.
+*/
 function syncWithMaster(hostData) {
   trackData = hostData["current"];
   if (hostData["queue"] && hostData["queue"].length > 0) {
@@ -120,7 +135,7 @@ function syncWithMaster(hostData) {
         Math.abs(userData.progressMs - trackData.progressMs) > 1000;
       if (
         isTrackDataAvailable &&
-        (isTrackChanged || isProgressDifferenceSignificant)
+        (isTrackChanged || isProgressDifferenceSignificant) // Only sync if track has changed or progress is significantly different
       ) {
         fetch("/sync-track", {
           method: "POST",
@@ -141,6 +156,9 @@ function syncWithMaster(hostData) {
     .catch((error) => console.error("Error fetching user track:", error));
 }
 
+/*
+  Updates the queue in the DOM.
+*/
 function updateQueue(queue) {
   const queueElement = document.getElementById("queue");
   while (queueElement.firstChild) {
@@ -154,6 +172,10 @@ function updateQueue(queue) {
   });
 }
 
+/*
+  Send a request to search for a song, then after getting the URI,
+  send a request to the server to add the song to the queue.
+*/
 function addToQueue() {
   const trackName = document.getElementById("queue-input").value;
   if (!trackName) {
@@ -184,6 +206,9 @@ function addToQueue() {
     });
 }
 
+/*
+  Sets the user's role and updates the DOM.
+*/
 function setRole(newRole) {
   document
     .querySelectorAll(".toggle-switch")
@@ -192,6 +217,9 @@ function setRole(newRole) {
   role = newRole;
 }
 
+/*
+  Joins a room and updates the DOM.
+*/
 function joinRoom() {
   const roomInput = document.getElementById("room-name").value;
   roomName = roomInput;
