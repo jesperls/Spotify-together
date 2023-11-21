@@ -2,11 +2,12 @@ const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
 const SpotifyWebApi = require("spotify-web-api-node");
+const queue = require("./queue/queue");
 require("dotenv").config();
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server); // Setup Socket.io
+const io = socketIo(server);
 
 // Serve static files from the 'public' folder
 app.use(express.static("public"));
@@ -23,7 +24,6 @@ io.on("connection", (socket) => {
     socket.join(data.roomName);
   });
 
-  // Handle disconnection
   socket.on("disconnect", () => {
     console.log("A client disconnected");
   });
@@ -31,7 +31,7 @@ io.on("connection", (socket) => {
 
 app.use(
   session({
-    secret: "wowth15IS4secret", // Use a secret key for your session
+    secret: process.env.APP_SECRET, // Use a secret key for your session, you
     resave: false,
     saveUninitialized: true,
     cookie: { secure: !true }, // Set secure to true in production with HTTPS
@@ -56,6 +56,9 @@ app.get("/login", (req, res) => {
   res.redirect(loginUrl);
 });
 
+/*
+  Callback endpoint for Spotify auth.
+*/
 app.get("/callback", async (req, res) => {
   const { code } = req.query;
   try {
@@ -174,6 +177,9 @@ app.get("/logout", (req, res) => {
   });
 });
 
+/*
+  Returns a JSON object with the current track info.
+*/
 app.get("/current-track", async (req, res) => {
   if (req.session.spotifyTokens) {
     const spotifyApi = new SpotifyWebApi({
@@ -188,7 +194,7 @@ app.get("/current-track", async (req, res) => {
           .map((artist) => artist.name)
           .join(", ");
         const progressMs = trackData.body.progress_ms;
-        const trackUri = trackData.body.item.uri; // Get the track URI
+        const trackUri = trackData.body.item.uri;
         const playbackState = trackData.body.is_playing;
         const timeSent = Date.now();
 
@@ -196,7 +202,7 @@ app.get("/current-track", async (req, res) => {
           track: trackName,
           artist: artistName,
           progressMs: progressMs,
-          trackUri: trackUri, // Include the track URI in the response
+          trackUri: trackUri,
           playbackState: playbackState,
           timeSent: timeSent,
         });
@@ -212,15 +218,77 @@ app.get("/current-track", async (req, res) => {
   }
 });
 
-app.post("/broadcast-track", (req, res) => {
+/*
+  Broadcasts the track info and queue to every user in the room.
+*/
+app.post("/broadcast-track", async (req, res) => {
   if (req.session.spotifyTokens && req.session.roomName) {
-    io.to(req.session.roomName).emit("master-track-updated", req.body);
+    hostQueue = await queue.getUserQueue(req.session.spotifyTokens.accessToken);
+    io.to(req.session.roomName).emit("master-track-updated", { "current": req.body, "queue": hostQueue});
     res.status(200).send("Track info broadcasted");
   } else {
     res.status(401).send("User not authenticated");
   }
 });
 
+/*
+  Searches for a track and returns the track URI of the first result.
+*/
+app.post("/search", async (req, res) => {
+  if (req.session.spotifyTokens) {
+    const spotifyApi = new SpotifyWebApi({
+      accessToken: req.session.spotifyTokens.accessToken,
+    });
+    try {
+      const data = await spotifyApi.searchTracks(req.body.trackName);
+      res.status(200).send(data.body.tracks.items[0].uri);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send(err);
+    }
+  } else {
+    res.status(401).send("User not authenticated");
+  }
+});
+
+/*
+  Emits an event to all clients in the room to add the track to their queue,
+  if the receiver then is the host, the host will call add-to-queue to add the
+  track to their queue.
+*/
+app.post("/client-to-queue", async (req, res) => {
+  if (req.session.spotifyTokens && req.session.roomName) {
+    io.to(req.session.roomName).emit("add-to-queue", req.body);
+    res.status(200).send("Added to queue");
+  } else {
+    res.status(401).send("User not authenticated or no room name available");
+  }
+});
+
+/*
+  Adds the track to the host's queue.
+*/
+app.post("/add-to-queue", async (req, res) => {
+  if (req.session.spotifyTokens) {
+    const spotifyApi = new SpotifyWebApi({
+      accessToken: req.session.spotifyTokens.accessToken,
+    });
+    try {
+      await spotifyApi.addToQueue(req.body.trackUri);
+      res.send("Added to queue");
+    } catch (err) {
+      console.error(err);
+      res.status(500).send(err);
+    }
+  } else {
+    res.status(401).send("User not authenticated");
+  }
+});
+
+/*
+  Syncs the client's track with the master track with some
+  minor time correction.
+*/
 app.post("/sync-track", async (req, res) => {
   if (req.session.spotifyTokens && req.session.roomName) {
     const spotifyApi = new SpotifyWebApi({
@@ -249,6 +317,9 @@ app.post("/sync-track", async (req, res) => {
   }
 });
 
+/*
+  Joins a room.
+*/
 app.post("/join-room", async (req, res) => {
   req.session.roomName = req.body.roomName;
   req.session.save((err) => {

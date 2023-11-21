@@ -1,8 +1,26 @@
 let role = "neither";
 let roomName = null;
 const socket = io();
+
 socket.on("master-track-updated", (trackData) => {
   syncWithMaster(trackData);
+});
+
+socket.on("add-to-queue", (trackData) => {
+  if (role === "host") {
+    fetch("/add-to-queue", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ trackUri: trackData.uri }),
+    })
+      .then((response) => response.text())
+      .then((message) => {
+        console.log(message);
+      })
+      .catch((error) => console.error("Error adding to queue:", error));
+  }
 });
 
 function login() {
@@ -13,7 +31,6 @@ function logout() {
   fetch("/logout")
     .then(() => {
       document.getElementById("user-info").innerText = "Not logged in";
-      // Optionally, reset the current track info
       document.getElementById("current-track").innerText = "No track playing";
     })
     .catch((error) => console.error("Logout failed:", error));
@@ -35,7 +52,6 @@ function previousTrack() {
   fetch("/previous");
 }
 
-// Add a function to update user info on page load
 function fetchUserInfo() {
   fetch("/user-info")
     .then((response) => response.json())
@@ -67,7 +83,7 @@ function updateCurrentTrack() {
         ).innerText = `Now playing: ${data.track} by ${data.artist}`;
 
         if (role === "host" && roomName !== null) {
-          broadcastCurrentTrack(data);
+          broadcastCurrentTrack(data); // Broadcast current track to clients
         }
       } else {
         document.getElementById("current-track").innerText = "No track playing";
@@ -86,7 +102,11 @@ function broadcastCurrentTrack(trackData) {
   });
 }
 
-function syncWithMaster(trackData) {
+function syncWithMaster(hostData) {
+  trackData = hostData["current"];
+  if (hostData["queue"] && hostData["queue"].length > 0) {
+    updateQueue(hostData["queue"]);
+  }
   if (role !== "client") {
     return; // Do not sync if the user is not a client
   }
@@ -121,8 +141,50 @@ function syncWithMaster(trackData) {
     .catch((error) => console.error("Error fetching user track:", error));
 }
 
+function updateQueue(queue) {
+  const queueElement = document.getElementById("queue");
+  while (queueElement.firstChild) {
+    queueElement.removeChild(queueElement.firstChild);
+  }
+  queue.forEach((track) => {
+    const trackElement = document.createElement("div");
+    trackElement.innerText = track.name;
+    trackElement.classList.add("queue-track");
+    queueElement.appendChild(trackElement);
+  });
+}
+
+function addToQueue() {
+  const trackName = document.getElementById("queue-input").value;
+  if (!trackName) {
+    alert("Please enter a track URI");
+    return;
+  }
+  fetch("/search", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ trackName: trackName }),
+  })
+    .then((response) => response.text())
+    .then((response) => {
+      fetch("/client-to-queue", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ uri: response }),
+      })
+        .then((response) => response.text())
+        .then((message) => {
+          console.log(message);
+        })
+        .catch((error) => console.error("Error adding to queue:", error));
+    });
+}
+
 function setRole(newRole) {
-  // Update UI based on role selection and send role to server
   document
     .querySelectorAll(".toggle-switch")
     .forEach((el) => el.classList.remove("active"));

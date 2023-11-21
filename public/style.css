@@ -103,7 +103,8 @@ input[type="radio"] {
   align-items: center;
 }
 
-.room-id-input {
+.room-id-input,
+.queue-input {
   font-family: "Press Start 2P", cursive;
   padding: 8px;
   font-size: 0.8em;
@@ -125,4 +126,19 @@ input[type="radio"] {
 
 .join-btn:hover {
   background-color: #d35400; /* Darker shade on hover */
+}
+
+#queue-add {
+  margin-bottom: 10px;
+}
+
+#queue-header {
+  margin-bottom: 10px;
+  font-size: larger;
+}
+
+.queue-track {
+  margin-bottom: 10px;
+  font-size: smaller;
+  color: #7f8c8d;
 }

@@ -76,6 +76,22 @@
           Join Room
         </button>
       </div>
+      <div id="queue-container" class="queue-container">
+        <div id="queue-header">Queue</div>
+        <div id="queue-add">
+          <input
+            type="text"
+            id="queue-input"
+            class="queue-input"
+            placeholder="Spotify URI"
+          />
+          <button id="queue-button" class="btn queue-btn" onclick="addToQueue()">
+            Add to Queue
+          </button>
+        </div>
+        <div id="queue" class="queue">
+          <div id="queue-empty" class="queue-track">Queue is empty</div>
+        </div>
     </div>
 
     <script src="script.js"></script>
