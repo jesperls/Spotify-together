@@ -13,4 +13,4 @@ async function getUserQueue(accessToken) {
     }
 }
 
-module.exports = getUserQueue;
+module.exports = { getUserQueue };
