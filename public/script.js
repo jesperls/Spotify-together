@@ -86,7 +86,11 @@ function broadcastCurrentTrack(trackData) {
   });
 }
 
-function syncWithMaster(trackData) {
+function syncWithMaster(hostData) {
+  trackData = hostData["current"];
+  if (hostData["queue"] && hostData["queue"].length > 0) {
+    updateQueue(hostData["queue"]);
+  }
   if (role !== "client") {
     return; // Do not sync if the user is not a client
   }
@@ -119,6 +123,20 @@ function syncWithMaster(trackData) {
       }
     })
     .catch((error) => console.error("Error fetching user track:", error));
+}
+
+function updateQueue(queue) {
+  console.log(queue);
+  const queueElement = document.getElementById("queue");
+  // first clear the current queue by removing all child elements, then add all the queue.name elements
+  while (queueElement.firstChild) {
+    queueElement.removeChild(queueElement.firstChild);
+  }
+  queue.forEach((track) => {
+    const trackElement = document.createElement("li");
+    trackElement.innerText = track.name;
+    queueElement.appendChild(trackElement);
+  });
 }
 
 function setRole(newRole) {

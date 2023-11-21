@@ -2,6 +2,7 @@ const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
 const SpotifyWebApi = require("spotify-web-api-node");
+const getUserQueue = require("./queue/queue");
 require("dotenv").config();
 
 const app = express();
@@ -212,9 +213,11 @@ app.get("/current-track", async (req, res) => {
   }
 });
 
-app.post("/broadcast-track", (req, res) => {
+app.post("/broadcast-track", async (req, res) => {
   if (req.session.spotifyTokens && req.session.roomName) {
-    io.to(req.session.roomName).emit("master-track-updated", req.body);
+    queue = await getUserQueue(req.session.spotifyTokens.accessToken);
+    console.log(queue);
+    io.to(req.session.roomName).emit("master-track-updated", { "current": req.body, "queue": queue});
     res.status(200).send("Track info broadcasted");
   } else {
     res.status(401).send("User not authenticated");
