@@ -233,7 +233,6 @@ app.post("/sync-track", async (req, res) => {
           uris: [data.trackUri],
           position_ms: data.progressMs + (Date.now() - data.timeSent),
         });
-        console.log((Date.now() - data.timeSent));
       }
       else {
         await spotifyApi.pause();

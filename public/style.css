@@ -2,6 +2,7 @@
 
 body {
   font-family: "Press Start 2P", cursive; /* Retro pixelated font */
+  text-shadow: 2px 2px 2px #000000; /* horizontal-offset vertical-offset blur-radius color */
   background-color: #2c3e50; /* Dark background for contrast */
   color: #ecf0f1;
   text-align: center;
@@ -41,13 +42,24 @@ body {
   margin: 4px 2px;
   cursor: pointer;
   border-radius: 4px;
-  transition: background-color 0.3s, transform 0.3s;
+  transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow for 3D effect */
 }
 
+/* Hover state */
 .btn:hover,
 .control-btn:hover {
-  background-color: #c0392b; /* Darker shade on hover */
-  transform: scale(1.05); /* Slight increase in size on hover */
+  background-color: #d62c1a; /* Slightly darker red */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Smaller shadow for depth */
+  transform: translateY(-2px); /* Slightly raise the button */
+}
+
+/* Active state */
+.btn:active,
+.control-btn:active {
+  background-color: #bf2617; /* Even darker red for depth */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); /* Even smaller shadow */
+  transform: translateY(1px); /* Button appears pressed down */
 }
 
 .role-selection label {
@@ -58,8 +70,6 @@ body {
 input[type="radio"] {
   margin-right: 5px;
 }
-
-/* ... Existing styles ... */
 
 .toggle-switch {
   display: inline-flex;
