@@ -223,7 +223,7 @@ app.get("/current-track", async (req, res) => {
 */
 app.post("/broadcast-track", async (req, res) => {
   if (req.session.spotifyTokens && req.session.roomName) {
-    hostQueue = await queue.getUserQueue(req.session.spotifyTokens.accessToken);
+    const hostQueue = await queue.getUserQueue(req.session.spotifyTokens.accessToken);
     io.to(req.session.roomName).emit("master-track-updated", { "current": req.body, "queue": hostQueue});
     res.status(200).send("Track info broadcasted");
   } else {
